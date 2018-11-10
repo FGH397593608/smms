@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超市进销存系统账号管理</title>
+    <!-- 引入公共样式 -->
+    <link rel="stylesheet" href="./stylesheets/commen.css">
+    <link rel="stylesheet" href="./stylesheets/elementUI.css">
+    <link rel="stylesheet" href="./stylesheets/index.css">
+</head>
+
+<body>
+    <div id="box">
+        <el-main>
+            <el-card class="box-card">
+                <div slot="header" class="clearfix">
+                    <span>账号管理</span>
+                </div>
+                <!-- 用户信息 -->
+
+                <template id="menberList">
+                    <el-table :data="tableData" style="width: 100%">
+                        <el-table-column label="用户ID" width="140">
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.u_id}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="用户名称" width="">
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.userName}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="用户组" width="">
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.userRegion}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="创建时间" width="" :formatter="mydateFormat" prop="createDate">
+                            <!-- <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.createDate}}</span>
+                            </template> -->
+                        </el-table-column>
+                        <el-table-column label="管理">
+                            <template slot-scope="scope">
+                                <el-button size="mini" @click="handleEdit(scope.row.u_id)" type="primary" plain><i
+                                        class="el-icon-edit"></i>编辑</el-button>
+                                <el-button size="mini" @click="handleDelete(scope.row.u_id)" type="danger" plain><i
+                                        class="el-icon-delete"></i>删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </el-card>
+        </el-main>
+    </div>
+    <script src="./javascripts/jquery.min.js"></script>
+    <script src="./javascripts/vue.min.js"></script>
+    <script src="./javascripts/elementUI.js"></script>
+    <!-- 引入时间格式化文件 -->
+    <script src="./javascripts/moment.min.js"></script>
+    <script>
+
+        new Vue({
+            el: "#box",
+            data() {
+                return {
+                    tableData: []
+                }
+            },
+            // created: function () {
+            //     this.getTableData();
+            // },
+            //HTML挂载页面后执行钩子函数
+            mounted(){
+                this.getuserDate();
+            },
+            methods: {
+                // getTableData(){
+                //     var self = this;
+                // $.post("/users/userList", function (data) {
+                //     self.tableData = data;
+                // })
+                // },
+                //添加方法,显示页面
+                getuserDate() {
+                    $.post("/users/userList", (data) => {
+                        this.tableData = data;
+                    })
+                },
+                //添加事件格式化方法
+                mydateFormat: function (row, column) {
+                    var date = row[column.property];
+                    if (date == undefined) {
+                        return "";
+                    }
+                    return moment(date).format("YYYY-MM-DD");
+                    //return moment(date).format("YYYY年MM月DD日");
+                },
+
+                // 修改账号
+                handleEdit(id) {
+                    location.href = "/member_edit.html?id=" + id;
+                },
+                // 删除账号
+                handleDelete(id) {
+                    if (confirm("是否确认删除?")) {
+                        $.post("/users/userDel", { id }, (data)=> {
+                            //从新加载页面,会导致分页刷新跳转到第一页
+                            // location.reload();
+                            // location.href = location.href;
+                            //重新发送AJAX请求,渲染页面,不会重新刷新页面
+                            if (data.isOK) {
+                                this.getuserDate();
+                                console.log(data.msg) 
+                            }else{
+                                console.log(data.msg)
+                            }
+                        })
+                    }
+                }
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>

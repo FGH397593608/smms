@@ -1,0 +1,47 @@
+.text {
+    font-size: 14px;
+  }
+
+  .item {
+    margin-bottom: 18px;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
+  }
+
+  .box-card {
+    width: 480px;
+  }
+  /* 设置框居中 */
+.el-card{
+    height: 300px;
+    position: fixed;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+/* 标题设置 */
+.el-card__header{
+    padding: 6px 20px;
+}
+/* 图标颜色设置 */
+.el-icon-upload{
+    color: #409EFF;
+}
+/* 背景颜色设置 */
+body{
+    background-color: #ccc;
+}
+/* 标题字体设置 */
+.el-card h1{
+    font-size: 26px;
+}
+

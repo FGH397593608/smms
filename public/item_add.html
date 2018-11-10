@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超市进销存系统商品管理</title>
+    <!-- 引入公共样式 -->
+    <link rel="stylesheet" href="./stylesheets/commen.css">
+    <link rel="stylesheet" href="./stylesheets/elementUI.css">
+    <link rel="stylesheet" href="./stylesheets/index.css">
+</head>
+
+<body>
+    <div id="box">
+        <el-main>
+            <el-card class="box-card">
+                <div slot="header" class="clearfix">
+                    <span>添加商品</span>
+                </div>
+                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm"
+                    :label-position="labelPosition">
+                    <el-form-item label="所属分类" prop="region">
+                        <el-select v-model="ruleForm.region" placeholder="选择分类">
+                            <el-option label="薯片" value="薯片"></el-option>
+                            <el-option label="话梅糖" value="话梅糖"></el-option>
+                            <el-option label="酸奶" value="酸奶"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="商品条形码" prop="barCode">
+                        <el-input v-model="ruleForm.barCode"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商品名称" prop="name">
+                        <el-input v-model="ruleForm.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商品售价" prop="salePrice">
+                        <el-input v-model="ruleForm.salePrice"></el-input>元
+                    </el-form-item>
+                    <el-form-item label="市场价" prop="marketPrice">
+                        <el-input v-model="ruleForm.marketPrice" ></el-input>元
+                    </el-form-item>
+                    <el-form-item label="商品进价" prop="value">
+                            <el-input v-model="ruleForm.value"></el-input>元
+                    </el-form-item>
+                    <el-form-item label="入库数量" prop="num">
+                            <el-input v-model="ruleForm.num"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商品重量" prop="weight">
+                            <el-input v-model="ruleForm.weight"></el-input>
+                    </el-form-item>
+                    <el-form-item label="商品单位" prop="unit">
+                            <el-input v-model="ruleForm.unit"></el-input>
+                    </el-form-item>
+                    <el-form-item label="会员优惠" prop="membership">
+                            <el-radio-group v-model="ruleForm.membership">
+                                <el-radio label="1">享受</el-radio>
+                                <el-radio label="2">不享受</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                    <el-form-item label="是否促销" prop="resource">
+                        <el-radio-group v-model="ruleForm.resource">
+                            <el-radio label="1">启用</el-radio>
+                            <el-radio label="2">禁用</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="商品简介">
+                            <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+                          </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForm('ruleForm')">添加</el-button>
+                        <el-button @click="resetForm('ruleForm')">重置</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-card>
+        </el-main>
+    </div>
+    <script src="./javascripts/jquery.min.js"></script>
+    <script src="./javascripts/vue.min.js"></script>
+    <script src="./javascripts/elementUI.js"></script>
+    <script>
+        new Vue({
+            el: "#box",
+            data() {
+                return {
+                    labelPosition: 'top',
+                    ruleForm: {
+                        region: '',
+                        barCode: '',
+                        name: '',
+                        salePrice:'',
+                        marketPrice:'',
+                        value:'',
+                        num:"",
+                        weight:'',
+                        unit:'',
+                        membership:'1',
+                        resource: '1',
+                        desc:''
+                    },
+                    rules: {
+                        region: [
+                            { required: true, message: '请选择所属分类', trigger: 'change' }
+                        ],
+                        barCode:[
+                            {required: true, message: '请生成商品条形码', trigger: 'blur'}
+                        ],
+                        name: [
+                            { required: true, message: '请输入商品名称', trigger: 'blur' },
+                            { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' }
+                        ],
+                        salePrice: [
+                            { required: true, message: '请输入商品售价', trigger: 'blur' }
+                        ]
+                    }
+                }
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            // 向后台发送数据
+                            $.post("/Classification/add", this.ruleForm, function (data) {
+                                console.log(data)
+                            })
+                            // 清除页面信息
+                            this.$refs[formName].resetFields();
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    })
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>

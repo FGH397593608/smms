@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>超市进销存系统首页</title>
+    <!-- 引入公共样式 -->
+    <link rel="stylesheet" href="./stylesheets/commen.css">
+    <link rel="stylesheet" href="./stylesheets/elementUI.css">
+    <link rel="stylesheet" href="./stylesheets/index.css">
+</head>
+
+<body>
+    <div id="box">
+        <el-main>
+            <el-card class="box-card">
+                <div slot="header" class="clearfix">
+                    <span>系统信息</span>
+                </div>
+                <div class="text item">
+                    <!-- 提示信息 -->
+                    <el-alert title="商品总数：5。已经销售的总金额：890.00。库存商品总价：1235.82" style="color:#000;" show-icon>
+                    </el-alert>
+                    <!-- 提示信息 -->
+                    <el-alert style="margin: 10px 0px; color: green;" title="导入数据" :closable="false" show-icon>
+                    </el-alert>
+                    <el-row :gutter="20">
+                        <!-- 销售排行 -->
+                        <el-col :span="12">
+                            <div class="grid-content bg-purple">
+                                <el-card class="box-card">
+                                    <div slot="header" class="clearfix">
+                                        <span>销售排行</span>
+                                    </div>
+                                    <template>
+                                        <el-table :data="saleData" stripe style="width: 100%">
+                                            <el-table-column prop="CommodityName" label="商品名称" width="300">
+                                            </el-table-column>
+                                            <el-table-column prop="SalesVolume" label="销量" width="130">
+                                            </el-table-column>
+                                        </el-table>
+                                    </template>
+                                </el-card>
+                            </div>
+                        </el-col>
+                        <!-- 缺货商品 -->
+                        <el-col :span="12">
+                            <div class="grid-content bg-purple">
+                                <el-card class="box-card">
+                                    <div slot="header" class="clearfix">
+                                        <span>缺货的商品</span>
+                                    </div>
+                                    <template>
+                                        <el-table :data="stockData" stripe style="width: 100%">
+                                            <el-table-column prop="s_CommodityName" label="商品名称" width="180">
+                                            </el-table-column>
+                                            <el-table-column prop="s_stock" label="库存" width="160">
+                                            </el-table-column>
+                                            <el-table-column prop="s_operation" label="操作">
+                                            </el-table-column>
+                                        </el-table>
+                                    </template>
+                                </el-card>
+                            </div>
+                        </el-col>
+                    </el-row>
+                </div>
+            </el-card>
+        </el-main>
+    </div>
+    <script src="./javascripts/jquery.min.js"></script>
+    <script src="./javascripts/vue.min.js"></script>
+    <script src="./javascripts/elementUI.js"></script>
+    <script>
+        new Vue({
+            el: "#box",
+            data() {
+                return {
+                    saleData: [{
+                        CommodityName: '海飞丝去屑洗发水',
+                        SalesVolume: 8,
+                    }, {
+                        CommodityName: '茅台酒',
+                        SalesVolume: 6,
+                    }, {
+                        CommodityName: '龙凤呈祥',
+                        SalesVolume: 5,
+                    }, {
+                        CommodityName: '龙凤呈祥2',
+                        SalesVolume: 2,
+                    }],
+                    stockData: [{
+                        s_CommodityName: '我的优乐美',
+                        s_stock: 0,
+                        s_operation: '入库'
+                    }]
+
+                }
+            },
+        })
+
+    </script>
+
+</body>
+
+</html>

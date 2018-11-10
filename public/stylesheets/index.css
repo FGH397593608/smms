@@ -1,0 +1,123 @@
+/* 设置高度 */
+html,body,#box, .el-container{
+    height: 100%;
+    background-color: rgb(245, 245, 245);
+} 
+/* 设置A标签 */
+.el-container a{
+color: #fff;
+text-decoration: none;
+}
+ /*左侧  */
+  .el-aside {
+    background:url(../images/left_bg.png) repeat-y;
+    color: #fff;
+    text-align: right;
+  }
+  #asideTitle{
+      font-size: 14px;
+  }
+  #asideTitle h1{
+      font-size:20px;
+      margin: 30px 10px;
+  }
+  #asideTitle p{
+      padding: 8px 10px;
+  }
+   /* 导航栏 */
+  /* 设置背景色 */
+  .el-menu{
+    background: transparent;
+    border: none;
+  }
+  .el-submenu{
+      padding:0px 0px 10px 20px;
+  }
+ /* 主菜单 */
+  .el-submenu__title{
+      background: url(../images/menu_bg.png) repeat-x;
+      line-height: 33px;
+      height: 33px;
+      border-radius: 5px 0 0 5px;
+  }
+  /* 子菜单 */
+  .el-submenu .el-menu-item {
+      padding:0px;
+      min-width:100px;
+      padding-right:20px;
+      line-height: 33px;
+      height: 33px;
+      border-radius: 5px 0 0 5px;
+      color: #c4c4c4;
+      background: transparent;
+  }
+  /* 子菜单移入激活样式 */
+ .el-menu-item:hover {
+      background: rgba(255,255,255,0.3)
+  }
+  /* 子菜单激活样式 */
+  .el-menu-item.is-active{
+      color: #fff;
+      font-weight: bold;
+  }
+  /* 导航上箭头隐藏 */
+  .el-submenu__icon-arrow {
+      display: none;
+  }
+
+/* 右侧 */
+.el-header, .el-footer {
+    color: #333;
+  }
+  .el-header h1{
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+  }  
+  .el-header p{
+    font-size: 14px;
+    margin: 10px 0px;
+}
+  .el-main {
+  padding:0px 20px 20px 20px;
+  }
+
+/* 卡片标题高度 */
+.el-card__header{
+    padding: 10px 20px;
+    font-weight: bold;
+    background: url(../images/cardTitleBg.png) repeat-x;
+}
+
+/* 提示信息 */
+.el-alert{
+    background-color: rgb(204, 211, 250);
+}
+
+/* 右侧内容样式 */
+  body > .el-container {
+    margin-bottom: 40px;
+  } 
+  
+  .el-footer {
+    line-height: 40px;
+    font-size: 12px;
+  }
+
+  .el-footer p {
+      border-top: 1px solid #ccc;
+  }
+
+  /* 管理员账号添加页面 */
+  /* 输入框长度设置 */
+  .el-input{
+     width: 50%;
+  }
+/*选则用户组框的长度  */
+.el-input--suffix{
+    width: 100%;
+}
+
+
+
+
