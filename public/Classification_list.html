@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="./stylesheets/commen.css">
     <link rel="stylesheet" href="./stylesheets/elementUI.css">
     <link rel="stylesheet" href="./stylesheets/index.css">
+    <!-- 引入建立围墙的路由 -->
+    <script src="/users/stopInto"></script>
 </head>
 
 <body>
@@ -38,8 +40,10 @@
                         </el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
-                                <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" type="primary"
-                                    plain><i class="el-icon-edit"></i>编辑</el-button>
+                                <el-button size="mini" @click="handleEdit(scope.row.c_id)" type="primary" plain><i
+                                        class="el-icon-edit"></i>编辑</el-button>
+                                <el-button size="mini" @click="handleDelete(scope.row.c_id)" type="danger" plain><i
+                                        class="el-icon-delete"></i>删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -58,25 +62,40 @@
                     tableData: []
                 }
             },
-            created: function () {
+            mounted: function () {
                 this.getTableData();
             },
             methods: {
+                //获取数据方法
                 getTableData() {
                     var self = this;
                     $.post("/Classification/classList", function (data) {
                         self.tableData = data;
                     })
                 },
-                handleEdit(index, row) {
-                    console.log(index, row);
+                //修改分类信息
+                handleEdit(id) {
+                    location.href = "/Classification_edit.html?id=" + id;
                 },
+                  // 删除账号
+                  handleDelete(id) {
+                    if (confirm("是否确认删除?")) {
+                        $.post("/Classification/classDel", { id }, (data)=> {
+                            //从新加载页面,会导致分页刷新跳转到第一页
+                            // location.reload();
+                            // location.href = location.href;
+                            //重新发送AJAX请求,渲染页面,不会重新刷新页面
+                            if (data.isOK) {
+                                this.getTableData();
+                                console.log(data.msg) 
+                            }else{
+                                console.log(data.msg)
+                            }
+                        })
+                    }
+                }
             }
         })
-        // $.post("/Classification/classList", function (data) {
-        //    a.tableData = data;
-        //    console.log(data)
-        // })
     </script>
 
 </body>

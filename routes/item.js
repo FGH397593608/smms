@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-//引入密码加密模板
-var crypto = require("crypto")
 
 //引入mysql数据库模板
 var connection=require("./mysqlmodel")

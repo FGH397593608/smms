@@ -10,17 +10,19 @@
     <link rel="stylesheet" href="./stylesheets/commen.css">
     <link rel="stylesheet" href="./stylesheets/elementUI.css">
     <link rel="stylesheet" href="./stylesheets/index.css">
+    <!-- 引入建立围墙的路由 -->
+    <script src="/users/stopInto"></script>
 </head>
 
 <body>
     <div id="box">
         <el-container>
             <!-- 左侧 -->
-            <el-aside width="200px">
+            <el-aside width="200px" >
                 <div id="asideTitle">
                     <h1>华联超市管理系统</h1>
-                    <p>您好，admin</p>
-                    <p><a href="main.html" target="mainContent">管理首页</a> | <a href="signout.html">退出系统</a> </p>
+                    <p>您好，<span >{{userData}}</span></p>
+                    <p><a href="main.html" target="mainContent">管理首页</a> | <a href="/users/signout">退出系统</a> </p>
                 </div>
                 <!-- 导航栏 -->
                 <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" unique-opened="true">
@@ -35,8 +37,8 @@
                         <template slot="title">
                             <span>商品管理</span>
                         </template>
-                        <el-menu-item index="2-1">商品管理</el-menu-item>
-                        <el-menu-item index="2-2">添加商品</el-menu-item>
+                        <el-menu-item index="2-1"><a href="item_list.html" target="mainContent">商品管理</a></el-menu-item>
+                        <el-menu-item index="2-2"><a href="item_add.html" target="mainContent">添加商品</a></el-menu-item>
                     </el-submenu>
                     <el-submenu index="3">
                         <template slot="title">
@@ -76,7 +78,7 @@
             <el-container>
                 <!-- 右侧头部 -->
                 <el-header style="height:80px;">
-                    <h1>欢迎您 admin</h1>
+                    <h1>欢迎您 <span >{{userData}}</span></h1>
                     <p>查看详细的系统信息</p>
                 </el-header>
                 <!-- 右侧内容 -->
@@ -94,9 +96,16 @@
     <script>
         new Vue({
             el: "#box",
-            data() {
+            data(){
                 return {
+                    userData:""
                 }
+            },
+            mounted(){
+                var address=location.href;
+                var username=address.split("=")[1];
+                this.userData=username;
+                console.log(address)
             },
             methods: {
                 handleOpen(key, keyPath) {

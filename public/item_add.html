@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="./stylesheets/commen.css">
     <link rel="stylesheet" href="./stylesheets/elementUI.css">
     <link rel="stylesheet" href="./stylesheets/index.css">
+    <!-- 引入建立围墙的路由 -->
+    <script src="/users/stopInto"></script>
 </head>
 
 <body>
@@ -35,29 +37,29 @@
                         <el-input v-model="ruleForm.name"></el-input>
                     </el-form-item>
                     <el-form-item label="商品售价" prop="salePrice">
-                        <el-input v-model="ruleForm.salePrice"></el-input>元
+                        <el-input v-model="ruleForm.salePrice" ></el-input>元
                     </el-form-item>
                     <el-form-item label="市场价" prop="marketPrice">
-                        <el-input v-model="ruleForm.marketPrice" ></el-input>元
+                        <el-input v-model="ruleForm.marketPrice"></el-input>元
                     </el-form-item>
                     <el-form-item label="商品进价" prop="value">
-                            <el-input v-model="ruleForm.value"></el-input>元
+                        <el-input v-model="ruleForm.value"></el-input>元
                     </el-form-item>
                     <el-form-item label="入库数量" prop="num">
-                            <el-input v-model="ruleForm.num"></el-input>
+                        <el-input v-model="ruleForm.num"></el-input>
                     </el-form-item>
                     <el-form-item label="商品重量" prop="weight">
-                            <el-input v-model="ruleForm.weight"></el-input>
+                        <el-input v-model="ruleForm.weight"></el-input>
                     </el-form-item>
                     <el-form-item label="商品单位" prop="unit">
-                            <el-input v-model="ruleForm.unit"></el-input>
+                        <el-input v-model="ruleForm.unit"></el-input>
                     </el-form-item>
                     <el-form-item label="会员优惠" prop="membership">
-                            <el-radio-group v-model="ruleForm.membership">
-                                <el-radio label="1">享受</el-radio>
-                                <el-radio label="2">不享受</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
+                        <el-radio-group v-model="ruleForm.membership">
+                            <el-radio label="1">享受</el-radio>
+                            <el-radio label="2">不享受</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
                     <el-form-item label="是否促销" prop="resource">
                         <el-radio-group v-model="ruleForm.resource">
                             <el-radio label="1">启用</el-radio>
@@ -65,8 +67,8 @@
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="商品简介">
-                            <el-input type="textarea" v-model="ruleForm.desc"></el-input>
-                          </el-form-item>
+                        <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="submitForm('ruleForm')">添加</el-button>
                         <el-button @click="resetForm('ruleForm')">重置</el-button>
@@ -85,25 +87,25 @@
                 return {
                     labelPosition: 'top',
                     ruleForm: {
-                        region: '',
-                        barCode: '',
-                        name: '',
-                        salePrice:'',
-                        marketPrice:'',
-                        value:'',
-                        num:"",
-                        weight:'',
-                        unit:'',
-                        membership:'1',
-                        resource: '1',
-                        desc:''
+                        region: '',//所属分类
+                        barCode: '',//条形码
+                        name: '',//商品名称
+                        salePrice: '',//商品售价
+                        marketPrice: '',//市场价
+                        value: '',//进价
+                        num: "",//入库数量
+                        weight: '',//商品重量
+                        unit: '',//商品单位
+                        membership: '1',//是否优惠
+                        resource: '1',//是否促销
+                        desc: ''//商品简介
                     },
                     rules: {
                         region: [
                             { required: true, message: '请选择所属分类', trigger: 'change' }
                         ],
-                        barCode:[
-                            {required: true, message: '请生成商品条形码', trigger: 'blur'}
+                        barCode: [
+                            { required: true, message: '请生成商品条形码', trigger: 'blur' }
                         ],
                         name: [
                             { required: true, message: '请输入商品名称', trigger: 'blur' },

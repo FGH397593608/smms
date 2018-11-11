@@ -44,7 +44,7 @@
     <script>
         new Vue({
             el: "#app",
-            data() {           
+            data() {
                 return {
                     ruleForm2: {
                         username: '',
@@ -70,7 +70,14 @@
                     //validate()验证方法回调函数的valid参数表示验证的结果
                     this.$refs[formName].validate((valid) => {
                         if (valid) {
-                            alert('submit!');
+                            //验证账户
+                            $.post("/users/checkIn", this.ruleForm2, (data)=>{
+                                if (data.isOK) {
+                                    location.href = `index.html?username=${this.ruleForm2.username}`
+                                } else {
+                                    alert(data.msg)
+                                }
+                            })
                         } else {
                             console.log('error submit!!');
                             return false;
