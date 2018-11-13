@@ -25,9 +25,7 @@
                     :label-position="labelPosition">
                     <el-form-item label="所属分类" prop="region">
                         <el-select v-model="ruleForm.region" placeholder="选择分类">
-                            <el-option label="薯片" value="薯片"></el-option>
-                            <el-option label="话梅糖" value="话梅糖"></el-option>
-                            <el-option label="酸奶" value="酸奶"></el-option>
+                            <el-option v-for="(item, index) in classData" :label="item.c_name" :value="item.c_id" ></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="商品条形码" prop="barCode">
@@ -36,38 +34,38 @@
                     <el-form-item label="商品名称" prop="name">
                         <el-input v-model="ruleForm.name"></el-input>
                     </el-form-item>
+                    <el-form-item label="商品进价" prop="value" >
+                        <el-input v-model="ruleForm.value" @blur="autoCount()"></el-input>
+                    </el-form-item>
                     <el-form-item label="商品售价" prop="salePrice">
-                        <el-input v-model="ruleForm.salePrice" ></el-input>元
+                        <el-input v-model="ruleForm.salePrice" ></el-input>
                     </el-form-item>
                     <el-form-item label="市场价" prop="marketPrice">
-                        <el-input v-model="ruleForm.marketPrice"></el-input>元
-                    </el-form-item>
-                    <el-form-item label="商品进价" prop="value">
-                        <el-input v-model="ruleForm.value"></el-input>元
+                        <el-input v-model="ruleForm.marketPrice"></el-input>
                     </el-form-item>
                     <el-form-item label="入库数量" prop="num">
                         <el-input v-model="ruleForm.num"></el-input>
                     </el-form-item>
-                    <el-form-item label="商品重量" prop="weight">
-                        <el-input v-model="ruleForm.weight"></el-input>
+                    <el-form-item label="商品重量" prop="weigth">
+                        <el-input v-model="ruleForm.weigth"></el-input>
                     </el-form-item>
                     <el-form-item label="商品单位" prop="unit">
                         <el-input v-model="ruleForm.unit"></el-input>
                     </el-form-item>
                     <el-form-item label="会员优惠" prop="membership">
                         <el-radio-group v-model="ruleForm.membership">
-                            <el-radio label="1">享受</el-radio>
-                            <el-radio label="2">不享受</el-radio>
+                            <el-radio label='1'>享受</el-radio>
+                            <el-radio label='2'>不享受</el-radio>
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="是否促销" prop="resource">
                         <el-radio-group v-model="ruleForm.resource">
                             <el-radio label="1">启用</el-radio>
-                            <el-radio label="2">禁用</el-radio>
+                            <el-radio label='2'>禁用</el-radio>
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="商品简介">
-                        <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+                        <el-input type="textarea" v-model="ruleForm.details" rows="5"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="submitForm('ruleForm')">添加</el-button>
@@ -90,31 +88,28 @@
                         region: '',//所属分类
                         barCode: '',//条形码
                         name: '',//商品名称
-                        salePrice: '',//商品售价
-                        marketPrice: '',//市场价
-                        value: '',//进价
-                        num: "",//入库数量
-                        weight: '',//商品重量
-                        unit: '',//商品单位
+                        value: null,//进价
+                        marketPrice: 0,//市场价
+                        salePrice: 0,//商品售价
+                        num: 0,//入库数量
+                        weigth: 0,//商品重量
+                        unit: 'Kg',//商品单位
                         membership: '1',//是否优惠
                         resource: '1',//是否促销
-                        desc: ''//商品简介
+                        details: ''//商品简介
                     },
                     rules: {
                         region: [
                             { required: true, message: '请选择所属分类', trigger: 'change' }
                         ],
-                        barCode: [
-                            { required: true, message: '请生成商品条形码', trigger: 'blur' }
-                        ],
                         name: [
                             { required: true, message: '请输入商品名称', trigger: 'blur' },
-                            { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' }
                         ],
-                        salePrice: [
+                        value: [
                             { required: true, message: '请输入商品售价', trigger: 'blur' }
                         ]
-                    }
+                    },
+                    classData:[]
                 }
             },
             methods: {
@@ -122,11 +117,18 @@
                     this.$refs[formName].validate((valid) => {
                         if (valid) {
                             // 向后台发送数据
-                            $.post("/Classification/add", this.ruleForm, function (data) {
-                                console.log(data)
+                            $.post("/item/add", this.ruleForm, function (data) {
+                                if (data.isOK) {
+                                    if(confirm("是否继续添加？")){
+                                        location.reload();
+                                    }else{
+                                    location.href="/item_list.html"
+                                    }
+                                    
+                                } else {
+                                    alert(data.msg)
+                                }
                             })
-                            // 清除页面信息
-                            this.$refs[formName].resetFields();
                         } else {
                             console.log('error submit!!');
                             return false;
@@ -135,7 +137,22 @@
                 },
                 resetForm(formName) {
                     this.$refs[formName].resetFields();
+                },
+                //添加自动计算
+                autoCount(){
+                    this.ruleForm.value=parseFloat(this.ruleForm.value).toFixed(2)
+                    this.ruleForm.marketPrice=(this.ruleForm.value*2).toFixed(2)
+                    this.ruleForm.salePrice=(this.ruleForm.marketPrice*0.8).toFixed(2)
                 }
+            },
+            mounted() {
+                //获取每一个分类名称，显示
+                $.post("/Classification/classList", (data) => {
+                    this.classData = data;
+                })
+            },
+            created(){
+                this.ruleForm.barCode=new Date().getTime();
             }
         })
 

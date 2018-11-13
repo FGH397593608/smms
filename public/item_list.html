@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="./stylesheets/commen.css">
     <link rel="stylesheet" href="./stylesheets/elementUI.css">
     <link rel="stylesheet" href="./stylesheets/index.css">
-        <!-- 引入建立围墙的路由 -->
-        <script src="/users/stopInto"></script>
+    <!-- 引入建立围墙的路由 -->
+    <script src="/users/stopInto"></script>
 </head>
 
 <body>
@@ -21,26 +21,72 @@
                 <div slot="header" class="clearfix">
                     <span>商品管理</span>
                 </div>
+                <!-- 搜索查询 -->
+                <div>
+                    <el-form :inline="true" :model="formInline" class="demo-form-inline search" >
+                        <el-form-item label="所属分类">
+                            <el-select v-model="formInline.category" placeholder="请选择分类">
+                                <el-option v-for="(item, index) in classData" :label="item.c_name" :value="item.c_id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="关键词">
+                            <el-input v-model="formInline.keywords" placeholder="条码或商品名称"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="onSubmit">查询</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <!-- 数据表格 -->
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%">
-                        <el-table-column label="所属分类" width="">
+                        <el-table-column label="编号" width="">
                             <template slot-scope="scope">
-                                <span style="margin-left: 10px">{{ scope.row.c_region}}</span>
+                                <span style="margin-left: 10px">{{ scope.row.i_id}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="分类名称" width="">
+                        <el-table-column label="所属分类" width="">
                             <template slot-scope="scope">
                                 <span style="margin-left: 10px">{{ scope.row.c_name}}</span>
                             </template>
                         </el-table-column>
+                        <el-table-column label="商品名称" width="">
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.i_name}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="商品进价" width="">
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.value |floatshow}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="商品售价" width="" class-name="">
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px" class="setColor">{{ scope.row.salePrice |floatshow}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="市场价" width="">
+                            <template slot-scope="scope">
+                                <span style="margin-left: 10px">{{ scope.row.marketPrice |floatshow}}</span>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="操作">
                             <template slot-scope="scope">
-                                <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" type="primary"
-                                    plain><i class="el-icon-edit"></i>编辑</el-button>
+                                <el-button size="mini" @click="handleEdit(scope.row.i_id)" type="primary" plain><i
+                                        class="el-icon-edit"></i>编辑</el-button>
+                                <el-button size="mini" @click="handleDelete(scope.row.i_id)" type="danger" plain><i
+                                        class="el-icon-delete"></i>删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
                 </template>
+                <!-- 分页 -->
+                <div>
+                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                        :page-sizes="[1,2,3,5,10,100, 200, 300, 400]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
+                        :total="total">
+                    </el-pagination>
+                </div>
             </el-card>
         </el-main>
     </div>
@@ -52,30 +98,82 @@
             el: "#box",
             data() {
                 return {
-                    tableData: []
+                    tableData: [],
+                    classData: [],//分类数据
+                    currentPage: 1,  //当前第几页
+                    total: 200,    //总条数
+                    pageSize: 3, //每页的条数
+                    formInline: {
+                        keywords: null, //关键字
+                        category: null //所属分类
+                    }
+
                 }
             },
-            created: function () {
+            mounted: function () {
                 this.getTableData();
+                //获取每一个分类名称，显示
+                $.post("/Classification/classList", (data) => {
+                    this.classData = data;
+                })
             },
             methods: {
                 getTableData() {
-                    var self = this;
-                    $.post("/Classification/classList", function (data) {
-                        self.tableData = data;
+                    var dataObj = {
+                        currentPage: this.currentPage,
+                        pageSize: this.pageSize,
+                        keywords:this.formInline.keywords,
+                        category:this.formInline.category
+                    }
+                    $.post("/item/itemList", dataObj, (data) => {
+                        this.tableData = data.data;
+                        this.total = data.total;
                         // console.log(data)
                     })
                 },
-                handleEdit(index, row) {
-                    console.log(index, row);
+                //更改页面显示条数
+                handleSizeChange(val) {
+                    // console.log(`每页 ${val} 条`);
+                    this.pageSize = val;
+                    this.getTableData()
+
                 },
+                //更改页码
+                handleCurrentChange(val) {
+                    // console.log(`当前页: ${val}`);
+                    this.currentPage = val;
+                    this.getTableData();
+                },
+                //搜索关键字提交
+                onSubmit() {
+                    this.getTableData();
+                    // console.log('submit!');
+                },
+                //修改商品信息
+                handleEdit(id) {
+                    
+                    // console.log(index, row);
+                },
+                // 删除商品
+                handleDelete(id) {
+                    if (confirm("是否确认删除?")) {
+                        $.post("/item/itemDel", { id }, (data) => {
+                            if (data.isOK) {
+                                this.getTableData();
+                                console.log(data.msg)
+                            } else {
+                                console.log(data.msg)
+                            }
+                        })
+                    }
+                }
+            },
+            filters: {
+                floatshow(price) {
+                    return price.toFixed(2)
+                }
             }
         })
-
-        // $.post("/Classification/classList", function (data) {
-        //    a.tableData = data;
-        //    console.log(data)
-        // })
     </script>
 
 </body>

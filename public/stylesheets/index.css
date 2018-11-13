@@ -118,6 +118,13 @@ text-decoration: none;
     width: 100%;
 }
 
+/* 设置颜色 */
+.setColor{
+    color: red;
+}
 
-
+/* 商品列表中搜索框长度设置 */
+.search .el-input{
+    width:100%
+}
 

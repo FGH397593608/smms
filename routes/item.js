@@ -2,121 +2,109 @@ var express = require('express');
 var router = express.Router();
 
 //引入mysql数据库模板
-var connection=require("./mysqlmodel")
+var connection = require("./mysqlmodel")
 
-// 添加账号
+// 添加商品
 router.post('/add', function (req, res) {
-  let { username, pass, region } = req.body;
-  //密码加密处理
-  pass = crypto.createHash("md5").update(pass).digest("hex")//digest:使用多少进制的加密
-  //写入数据
-  // let sqlStr = `insert into users(username,userPwd,userRegion) values('${username}','${pass}','${region}')`
-  let sqlStr = "insert into users(username,userPwd,userRegion) values(?,?,?)"
-  //防止sql注入,提高安全性
-  let sqlArr = [username, pass, region]
-  //sql数据录入数据库
-  connection.query(sqlStr, sqlArr, function (err, data) {
-    if (err)
-      throw err;
-    if (data.affectedRows > 0) {
-      res.send({ "isOK": true, "msg": "数据保存成功" });
-    } else {
-      res.send({ "isOK": false, "msg": "数据保存失败" });
-    }
-  })
+    let { region, barCode, name, value, marketPrice, salePrice, num, weigth, unit, membership, resource, details } = req.body;
+    //写入数据
+    let sqlStr = "insert into item(c_id,barCode,i_name,value,marketPrice,salePrice,num,weigth,unit,membership,resource,details) values(?,?,?,?,?,?,?,?,?,?,?,?)"
+    //防止sql注入,提高安全性
+    let sqlArr = [region, barCode, name, salePrice, marketPrice, value, num, weigth, unit, membership, resource, details]
+    //sql数据录入数据库
+    connection.query(sqlStr, sqlArr, function (err, data) {
+        if (err)
+            throw err;
+        if (data.affectedRows > 0) {
+            res.send({ "isOK": true, "msg": "数据保存成功" });
+        } else {
+            res.send({ "isOK": false, "msg": "数据保存失败" });
+        }
+    })
 });
 
-//账号管理
-router.post("/userList", function (req, res) {
-  let sqlStr = 'select *from users order by u_id DESC';
-  connection.query(sqlStr, function (err, data) {
-    if (err)
-      throw err;
-    res.send(data);
-  })
+//商品管理
+router.post("/itemList", function (req, res) {
+    let { currentPage, pageSize,keywords,category } = req.body;
+    let sqlStr = 'select t1.*,t2.c_name from item as t1 LEFT JOIN classification as t2 on t1.c_id=t2.c_id where 1=1';
+    //获取总条数
+    connection.query(sqlStr, function (err, data) {
+        if (err)
+            throw err;
+        var total = data.length;
+        //搜索模块
+        if(category){
+            sqlStr+=` and t1.c_id=${category}`
+        }
+        if(keywords){
+            sqlStr+=` and  (t1.barCode like '%${keywords}%' or t1.i_name like '%${keywords}%')`
+        }
+        if(category||keywords){
+            //获取搜索过后的条目数
+            connection.query(sqlStr, function (err, data) {
+                if (err)
+                    throw err;
+                total = data.length;
+            })
+        }
+        // 分页模块
+        var skip = (currentPage - 1) * pageSize;
+        let sqlArr = [skip, parseInt(pageSize)]
+        sqlStr += " limit ?,?"
+        connection.query(sqlStr, sqlArr, function (err, data) {
+            if (err)
+                throw err;
+            res.send({ "total": total, "data": data });
+        })
+    })
 })
 
 //账号id信息查找-----账号修改
-router.post("/userIDFind", function (req, res) {
-  var u_id = req.body.id;
-  let sqlStr = `select *from users where u_id=${u_id}`
-  connection.query(sqlStr, function (err, data) {
-    if (err)
-      throw err;
-    res.send(data)
-  })
-})
+// router.post("/itemIDFind", function (req, res) {
+//   var i_id = req.body.id;
+//   let sqlStr = `select *from item where i_id=${i_id}`
+//   connection.query(sqlStr, function (err, data) {
+//     if (err)
+//       throw err;
+//     res.send(data)
+//   })
+// })
 //账号修改
-router.post("/userEdit", function (req, res) {
-  let { pass, username, region, u_id, oldPass } = req.body;
-  if (pass != oldPass) {
-    //密码加密处理
-    pass = crypto.createHash("md5").update(pass).digest("hex")
-  }
-  let sqlStr = "update users set userName=?,userPwd=?,userRegion=? where u_id=?"
-  let sqlArr = [username, pass, region, u_id]
-  connection.query(sqlStr, sqlArr, function (err, data) {
-    if (err) throw err;
-    if (data.affectedRows > 0) {
-      res.send({ "isOK": true, "msg": "账户信息修改成功" })
-    } else {
-      res.send({ "isOK": false, "msg": "账户信息修改失败" })
-    }
-  })
+// router.post("/userEdit", function (req, res) {
+//   let { pass, username, region, u_id, oldPass } = req.body;
+//   if (pass != oldPass) {
+//     //密码加密处理
+//     pass = crypto.createHash("md5").update(pass).digest("hex")
+//   }
+//   let sqlStr = "update users set userName=?,userPwd=?,userRegion=? where u_id=?"
+//   let sqlArr = [username, pass, region, u_id]
+//   connection.query(sqlStr, sqlArr, function (err, data) {
+//     if (err) throw err;
+//     if (data.affectedRows > 0) {
+//       res.send({ "isOK": true, "msg": "账户信息修改成功" })
+//     } else {
+//       res.send({ "isOK": false, "msg": "账户信息修改失败" })
+//     }
+//   })
+// })
+
+// 商品删除
+router.post("/itemDel", function (req, res) {
+    var i_id = req.body.id;
+    let sqlStr = `delete from item where i_id=${i_id}`
+    connection.query(sqlStr, function (err, data) {
+        if (err)
+            throw err;
+        if (data.affectedRows > 0) {
+            res.send({ "isOK": true, "msg": "账户删除成功" })
+        } else {
+            res.send({ "isOK": false, "msg": "账户删除失败" })
+        }
+    })
 })
 
-// 账号删除
-router.post("/userDel", function (req, res) {
-  var u_id = req.body.id;
-  let sqlStr = `delete from users where u_id=${u_id}`
-  connection.query(sqlStr, function (err, data) {
-    if (err)
-      throw err;
-    if (data.affectedRows > 0) {
-      res.send({ "isOK": true, "msg": "账户删除成功" })
-    } else {
-      res.send({ "isOK": false, "msg": "账户删除失败" })
-    }
-  })
-})
 
-//登陆账号检查
-router.post("/checkIn", function (req, res) {
-  let { username, checkPass } = req.body;
-  checkPass = crypto.createHash("md5").update(checkPass).digest("hex");
-  let sqlStr = "select u_id from users where userName=? and userPwd=?"
-  let sqlArr = [username, checkPass]
-  connection.query(sqlStr, sqlArr, function (err, data) {
-    if (err) throw err;
-    if(data.length>0){
-      //写入cookie
-      res.cookie("userName",username)
-      res.cookie("u_id",data[0].u_id)
-      res.send({isOK:true,msg:"登陆成功"})
-    }else{
-      res.send({isOK:false,msg:"登陆失败"})
-    }
-    
-  })
-})
 
-//退出账号
-router.get("/signout",function(req,res){
-res.clearCookie("u_id")
-res.clearCookie("userName")
-res.redirect("/signin.html")
-})
 
-//建立围墙，阻止进入页面
-router.get("/stopInto",function(req,res){
-var userName=req.cookies.userName;
-// var userID=req.cookies.u_id;
-if(!userName){
-res.send("alert('您无权访问该页面，请登录您的账号');location.href='signin.html';")
-}
-else{
-  res.send("")
-}
-})
 
 module.exports = router;

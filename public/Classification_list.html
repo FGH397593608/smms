@@ -25,7 +25,7 @@
                     <el-table :data="tableData" stripe style="width: 100%">
                         <el-table-column label="所属分类" width="">
                             <template slot-scope="scope">
-                                <span style="margin-left: 10px">{{ scope.row.c_region}}</span>
+                                <span style="margin-left: 10px">{{ scope.row.c_nameshow}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="分类名称" width="">
@@ -70,6 +70,11 @@
                 getTableData() {
                     var self = this;
                     $.post("/Classification/classList", function (data) {
+                        data.forEach(v => {
+                            if(v.c_nameshow==null){
+                                v.c_nameshow="顶级分类"
+                            }
+                        });
                         self.tableData = data;
                     })
                 },

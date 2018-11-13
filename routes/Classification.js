@@ -24,7 +24,7 @@ router.post('/add', function (req, res) {
 
 //分类管理
 router.post("/classList", function (req, res) {
-  let sqlStr = 'select *from Classification order by c_region DESC';
+  let sqlStr = 'select t1.*,t2.c_name as c_nameshow from Classification as t1 left join Classification as t2 on t1.c_region=t2.c_id';
   connection.query(sqlStr, function (err, data) {
     if (err)
       throw err;
